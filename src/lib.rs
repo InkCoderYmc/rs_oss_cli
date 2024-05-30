@@ -1,3 +1,5 @@
+extern crate serde;
+extern crate serde_yaml;
 use aws_config::{SdkConfig,Region};
 use aws_sdk_s3::{config::{Credentials,SharedCredentialsProvider}, error::SdkError, operation::{delete_object::{DeleteObjectError, DeleteObjectOutput}, head_object::{HeadObjectError, HeadObjectOutput}, put_object::{PutObjectError, PutObjectOutput}}, primitives::ByteStream};
 use core::str;
@@ -72,6 +74,19 @@ impl OssConfig {
             client,
         }
     }
+
+    pub fn new_from_file(file_path: &str, config_name: &str) -> OssConfig {
+        println!("Reading config file from: {}", file_path);
+        let yaml_str = std::fs::read_to_string(file_path).unwrap();
+        let config = serde_yaml::from_str::<serde_yaml::Value>(&yaml_str).unwrap();
+        let config = config[config_name].clone();
+        let access_key = config["access_key"].as_str().unwrap().to_string();
+        let secret_access_key = config["secret_access_key"].as_str().unwrap().to_string();
+        let endpoint_url = config["endpoint_url"].as_str().unwrap().to_string();
+        let region = config["region"].as_str().unwrap().to_string();
+        let bucket = config["bucket"].as_str().unwrap().to_string();
+        OssConfig::new(access_key, secret_access_key, endpoint_url, region, bucket)
+    }
 }
 
 pub struct OssClient {
@@ -82,6 +97,18 @@ impl OssClient {
     pub fn new(access_key: String, secret_key: String, endpoint: String, region: String, bucket: String) -> OssClient {
         OssClient {
             config: OssConfig::new(access_key, secret_key, endpoint, region, bucket),
+        }
+    }
+
+    pub fn new_from_file(file_path: &str, config_name: &str) -> OssClient {
+        OssClient {
+            config: OssConfig::new_from_file(file_path, config_name),
+        }
+    }
+
+    pub fn new_from_config(config: OssConfig) -> OssClient {
+        OssClient {
+            config: config,
         }
     }
 

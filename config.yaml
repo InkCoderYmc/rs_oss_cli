@@ -1,0 +1,13 @@
+default:
+  access_key: T90UlXgHTqGfovOh
+  secret_access_key: tPIA6vHV7Jxkpmr4Ria75pj773AqDAZI
+  region: jssz-inner
+  endpoint_url: http://jssz-inner-boss.bilibili.co
+  bucket: llm_snapshot
+
+llm-data:
+  access_key: XsoNq0QPQJToqHsG
+  secret_access_key: ylQHuuY8LIkIbjSHqsoW0tUD9aehQQse
+  region: shjd-inner
+  endpoint_url: http://shjd-inner-boss.bilibili.co
+  bucket: llm-data
